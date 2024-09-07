@@ -4,6 +4,7 @@
     "build": "npx tsc",
     "dev": "npx tsc -w"
   },
+  "main": "src/index.js",
   "type": "module",
   "dependencies": {
     "@atproto/api": "^0.13.6",
@@ -17,6 +18,7 @@
     "ws": "^8.18.0"
   },
   "devDependencies": {
+    "@flydotio/dockerfile": "^0.5.8",
     "@types/ws": "^8.5.12"
   }
 }
