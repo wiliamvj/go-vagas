@@ -49,14 +49,13 @@ export default async function bot(): Promise<void> {
               return;
             }
 
-            const postUri = post?.reply?.root?.uri;
-            const postCid = post?.reply?.root?.cid;
-
             try {
-              // like original post
-              await agent.like(postUri, postCid);
               // repost original post
-              await agent.repost(postUri, postCid);
+              await agent.repost(
+                post?.reply?.root?.uri,
+                post?.reply?.root?.cid
+              );
+              console.log("Reposted", post?.reply?.root?.uri);
             } catch (e) {
               console.error("Error", e);
             }
