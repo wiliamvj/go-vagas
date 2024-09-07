@@ -1,0 +1,22 @@
+{
+  "scripts": {
+    "serve": "node src/index.js",
+    "build": "npx tsc",
+    "dev": "npx tsc -w"
+  },
+  "type": "module",
+  "dependencies": {
+    "@atproto/api": "^0.13.6",
+    "@atproto/common": "^0.4.1",
+    "@ipld/car": "^5.3.2",
+    "cbor": "^9.0.2",
+    "cron": "^3.1.7",
+    "dotenv": "^16.4.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.5.12"
+  }
+}
