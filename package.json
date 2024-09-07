@@ -13,12 +13,14 @@
     "cbor": "^9.0.2",
     "cron": "^3.1.7",
     "dotenv": "^16.4.5",
+    "express": "^4.19.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4",
     "ws": "^8.18.0"
   },
   "devDependencies": {
     "@flydotio/dockerfile": "^0.5.8",
+    "@types/express": "^4.17.21",
     "@types/ws": "^8.5.12"
   }
 }
