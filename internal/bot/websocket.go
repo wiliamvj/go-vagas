@@ -6,17 +6,16 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
-	"strings"
 
 	"github.com/fxamacker/cbor/v2"
 	"github.com/gorilla/websocket"
 	"github.com/ipfs/go-cid"
 	carv2 "github.com/ipld/go-car/v2"
+	"github.com/wiliamvj/go-vagas/internal/utils"
 )
 
 var (
 	wsURL = "wss://bsky.network/xrpc/com.atproto.sync.subscribeRepos"
-	terms = []string{"#1123", "#1124"}
 )
 
 type RepoCommitEvent struct {
@@ -156,7 +155,7 @@ func handleCARBlocks(blocks []byte, op RepoOperation) error {
 						continue
 					}
 
-					if containsTerm(post.Text) {
+					if utils.FilterTerms(post.Text) {
 						repost(&post)
 					}
 				}
@@ -165,15 +164,6 @@ func handleCARBlocks(blocks []byte, op RepoOperation) error {
 	}
 
 	return nil
-}
-
-func containsTerm(text string) bool {
-	for _, term := range terms {
-		if strings.Contains(strings.ToLower(text), strings.ToLower(term)) {
-			return true
-		}
-	}
-	return false
 }
 
 func decodeCID(cidBytes []byte) (cid.Cid, error) {

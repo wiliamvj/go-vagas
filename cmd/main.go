@@ -16,5 +16,8 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	bot.Websocket()
+	err = bot.Websocket()
+	if err != nil {
+		log.Fatal(err)
+	}
 }
