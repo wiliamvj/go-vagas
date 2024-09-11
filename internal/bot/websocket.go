@@ -151,7 +151,7 @@ func handleCARBlocks(blocks []byte, op RepoOperation) error {
 						continue
 					}
 
-					if post.Text == "" && post.Reply == nil {
+					if post.Text == "" || post.Reply == nil {
 						continue
 					}
 
