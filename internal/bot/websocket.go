@@ -2,6 +2,7 @@ package bot
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"log/slog"
@@ -35,16 +36,37 @@ type RepoCommitEvent struct {
 type RepoOperation struct {
 	Action string      `cbor:"action"`
 	Path   string      `cbor:"path"`
-	Reply  []byte      `cbor:"reply"`
+	Reply  *Reply      `cbor:"reply"`
 	Text   []byte      `cbor:"text"`
 	CID    interface{} `cbor:"cid"`
 }
 
-func Websocket() {
+type Reply struct {
+	Parent Parent `json:"parent"`
+	Root   Root   `json:"root"`
+}
+
+type Parent struct {
+	Cid string `json:"cid"`
+	Uri string `json:"uri"`
+}
+
+type Root struct {
+	Cid string `json:"cid"`
+	Uri string `json:"uri"`
+}
+
+type Post struct {
+	Type  string `json:"$type"`
+	Text  string `json:"text"`
+	Reply *Reply `json:"reply"`
+}
+
+func Websocket() error {
 	conn, _, err := websocket.DefaultDialer.Dial(wsURL, nil)
 	if err != nil {
 		slog.Error("Failed to connect to WebSocket", "error", err)
-		return
+		return err
 	}
 	defer conn.Close()
 
@@ -54,7 +76,7 @@ func Websocket() {
 		_, message, err := conn.ReadMessage()
 		if err != nil {
 			slog.Error("Error reading message from WebSocket", "error", err)
-			return
+			continue
 		}
 
 		decoder := cbor.NewDecoder(bytes.NewReader(message))
@@ -69,30 +91,39 @@ func Websocket() {
 				slog.Error("Error decoding CBOR message", "error", err)
 				break
 			}
-			handleEvent(evt)
-		}
-	}
-}
-
-func handleEvent(evt RepoCommitEvent) {
-	for _, op := range evt.Ops {
-		if op.Action == "create" {
-			if len(evt.Blocks) > 0 {
-				handleCARBlocks(evt.Blocks, op)
+			err = handleEvent(evt)
+			if err != nil {
+				return err
 			}
 		}
 	}
 }
 
-func handleCARBlocks(blocks []byte, op RepoOperation) {
+func handleEvent(evt RepoCommitEvent) error {
+	for _, op := range evt.Ops {
+		if op.Action == "create" {
+			if len(evt.Blocks) > 0 {
+				err := handleCARBlocks(evt.Blocks, op)
+				if err != nil {
+					slog.Error("Error handling CAR blocks", "error", err)
+					return err
+				}
+			}
+		}
+	}
+
+	return nil
+}
+
+func handleCARBlocks(blocks []byte, op RepoOperation) error {
 	if len(blocks) == 0 {
-		return
+		return errors.New("no blocks to process")
 	}
 
 	reader, err := carv2.NewBlockReader(bytes.NewReader(blocks))
 	if err != nil {
 		slog.Error("Error creating CAR block reader", "error", err)
-		return
+		return err
 	}
 
 	for {
@@ -110,31 +141,30 @@ func handleCARBlocks(blocks []byte, op RepoOperation) {
 				c, err := decodeCID(cidBytes)
 				if err != nil {
 					slog.Error("Error decoding CID from bytes", "error", err)
-					return
+					continue
 				}
 
 				if block.Cid().Equals(c) {
-					var decodedData map[string]interface{}
-					err := cbor.Unmarshal(block.RawData(), &decodedData)
+					var post Post
+					err := cbor.Unmarshal(block.RawData(), &post)
 					if err != nil {
 						slog.Error("Error decoding CBOR block", "error", err)
-						return
-					}
-
-					text, ok := decodedData["text"].(string)
-					reply, _ := decodedData["reply"].(map[string]interface{})
-
-					if !ok && reply == nil {
 						continue
 					}
 
-					if text != "" && containsTerm(text) {
-						repost()
+					if post.Text == "" && post.Reply == nil {
+						continue
+					}
+
+					if containsTerm(post.Text) {
+						repost(&post)
 					}
 				}
 			}
 		}
 	}
+
+	return nil
 }
 
 func containsTerm(text string) bool {
@@ -152,5 +182,6 @@ func decodeCID(cidBytes []byte) (cid.Cid, error) {
 	if err != nil {
 		return c, fmt.Errorf("error decoding CID: %w", err)
 	}
+
 	return c, nil
 }
