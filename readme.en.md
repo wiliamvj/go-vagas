@@ -1,6 +1,8 @@
 # Golang Jobs Bot for BlueSky
 
-This is a Go bot designed to automatically repost job openings related to Golang on BlueSky. It searches for posts containing the following hashtags:
+This is a Go bot designed to automatically repost job openings related to Golang on BlueSky.
+
+It searches for posts containing the following hashtags:
 
 - #govagas
 - #golangvagas
@@ -17,7 +19,7 @@ This is a Go bot designed to automatically repost job openings related to Golang
 
 To run the bot locally, follow these steps:
 
-1. Make sure you have Go installed on your machine. You can check this by running the command:
+1. Make sure you have Go installed on your machine (if you don't use Docker). You can check this by running the command:
 
 ```bash
     go version

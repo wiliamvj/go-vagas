@@ -2,7 +2,9 @@
 
 # Golang Vagas Bot para BlueSky
 
-Este é um bot desenvolvido em Go para repostar automaticamente vagas de emprego relacionadas a Golang no BlueSky. Ele busca por postagens que contenham as seguintes hashtags:
+Este é um bot desenvolvido em Go para repostar automaticamente vagas de emprego relacionadas a Golang no BlueSky.
+
+Ele busca por postagens que contenham as seguintes hashtags:
 
 - #govagas
 - #golangvagas
@@ -19,7 +21,7 @@ Este é um bot desenvolvido em Go para repostar automaticamente vagas de emprego
 
 Para rodar o bot localmente, siga os seguintes passos:
 
-1. Certifique-se de ter o Go instalado em sua máquina. Você pode verificar isso rodando o comando:
+1. Certifique-se de ter o Go instalado em sua máquina (caso não utilize o Docker). Você pode verificar isso rodando o comando:
 
     ```bash
       go version
