@@ -5,11 +5,13 @@ import (
 	"log/slog"
 	"net/http"
 
+	"github.com/joho/godotenv"
 	"github.com/wiliamvj/go-vagas/internal/bot"
 )
 
 func main() {
 	slog.Info("Starting bot")
+	_ = godotenv.Load()
 
 	go func() {
 		http.HandleFunc("/health", bot.HealthCheck)
