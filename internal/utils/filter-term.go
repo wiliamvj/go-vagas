@@ -3,7 +3,7 @@ package utils
 import "strings"
 
 var (
-	terms = []string{"#1123", "#1124"}
+	terms = []string{"#govagas", "#golangvagas", "#vagasgolang", "#vagasgo", "#gojobs"}
 )
 
 func FilterTerms(text string) bool {

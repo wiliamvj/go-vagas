@@ -11,7 +11,10 @@ import (
 
 func main() {
 	slog.Info("Starting bot")
-	_ = godotenv.Load()
+	err := godotenv.Load()
+	if err != nil {
+		slog.Error("Error loading .env file")
+	}
 
 	go func() {
 		http.HandleFunc("/health", bot.HealthCheck)
@@ -22,7 +25,7 @@ func main() {
 		}
 	}()
 
-	err := bot.Websocket()
+	err = bot.Websocket()
 	if err != nil {
 		log.Fatal(err)
 	}
