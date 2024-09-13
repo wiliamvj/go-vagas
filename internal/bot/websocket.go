@@ -74,7 +74,20 @@ func Websocket() error {
 	for {
 		_, message, err := conn.ReadMessage()
 		if err != nil {
+			if websocket.IsCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway) {
+				slog.Warn("WebSocket connection closed", "error", err)
+				break
+			}
+
 			slog.Error("Error reading message from WebSocket", "error", err)
+
+			conn.Close()
+			conn, _, err = websocket.DefaultDialer.Dial(wsURL, nil)
+			if err != nil {
+				slog.Error("Failed to reconnect to WebSocket", "error", err)
+				return err
+			}
+			slog.Info("Reconnected to WebSocket", "url", wsURL)
 			continue
 		}
 
@@ -96,6 +109,7 @@ func Websocket() error {
 			}
 		}
 	}
+	return nil
 }
 
 func handleEvent(evt RepoCommitEvent) error {
