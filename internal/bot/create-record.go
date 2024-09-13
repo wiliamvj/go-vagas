@@ -10,7 +10,6 @@ import (
 )
 
 type CreateRecordProps struct {
-	Post        *Post
 	DIDResponse *DIDResponse
 	Resource    string
 	URI         string

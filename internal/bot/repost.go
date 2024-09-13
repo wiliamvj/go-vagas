@@ -12,7 +12,6 @@ func repost(p *Post) error {
 	}
 
 	resource := &CreateRecordProps{
-		Post:        p,
 		DIDResponse: token,
 		Resource:    "app.bsky.feed.repost",
 		URI:         p.Reply.Root.Uri,
